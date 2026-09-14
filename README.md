@@ -52,7 +52,9 @@ Then open http://localhost:8788 and unlock with `localtest`.
 npx wrangler kv namespace create AGENDA_KV
 ```
 
-The dashboard route works too: **Storage & Databases → KV → Create**. Either way you only need the namespace to exist; the binding is what matters.
+The dashboard route works too: from **Account Home** (not a specific domain — KV is
+account-level), go to **Storage & Databases → Workers KV → Create instance**. Either way
+you only need the namespace to exist; the binding in step 4 is what actually wires it up.
 
 ### 2. Push to GitHub
 
@@ -63,30 +65,38 @@ git push -u origin main
 
 ### 3. Connect Cloudflare Pages
 
-In the Cloudflare dashboard: **Workers & Pages → Create → Pages → Connect to Git**, pick the
-repo, then set:
+In the Cloudflare dashboard: **Workers & Pages → Create application → Pages → Connect to
+Git**. Authorize GitHub, pick the repo, then under **Set up builds and deployments**:
 
+- **Production branch:** `main`
+- **Framework preset:** None
 - **Build command:** `npm run build`
 - **Build output directory:** `dist`
 
 Cloudflare picks up `functions/` automatically — no extra config.
 
+The first deploy will succeed but the site won't save yet. That's expected; the bindings
+come next.
+
 ### 4. Add the bindings
 
-**Settings → Bindings → Add:**
+**Settings → Bindings → Add → KV namespace:**
 
-- **KV namespace** — variable name `AGENDA_KV`, pointing at the namespace from step 1.
+- **Variable name:** `AGENDA_KV` (must match exactly — the Function reads `env.AGENDA_KV`)
+- **KV namespace:** the one from step 1
 
-**Settings → Environment variables → Add:**
+**Settings → Variables and Secrets → Add:**
 
-- **Secret** — name `EDIT_KEY`, value = whatever password you want. Use the *Encrypt*
-  option so it isn't readable in the dashboard.
+- **Type:** Secret
+- **Name:** `EDIT_KEY`
+- **Value:** your edit password
 
-Add both to **Production** (and Preview, if you want previews to work).
+Add both to **Production** (and Preview, if you want preview deploys to work).
 
 ### 5. Redeploy
 
-Bindings only attach on a fresh build, so trigger one from the dashboard or push a commit.
+Bindings only attach on a fresh build, so the deploy from step 3 still doesn't have them.
+Trigger a redeploy from the **Deployments** tab, or push a commit.
 
 ## Security notes
 
