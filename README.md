@@ -52,7 +52,7 @@ Then open http://localhost:8788 and unlock with `localtest`.
 npx wrangler kv namespace create AGENDA_KV
 ```
 
-Copy the `id` it prints into `wrangler.toml`, replacing `REPLACE_WITH_YOUR_KV_NAMESPACE_ID`.
+The dashboard route works too: **Storage & Databases → KV → Create**. Either way you only need the namespace to exist; the binding is what matters.
 
 ### 2. Push to GitHub
 
