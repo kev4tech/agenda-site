@@ -106,3 +106,16 @@ Trigger a redeploy from the **Deployments** tab, or push a commit.
 - `EDIT_KEY` is only ever compared inside the Function; it never reaches the browser.
 - If `EDIT_KEY` isn't configured, writes are refused outright rather than left open.
 - The key is held in `sessionStorage`, so closing the tab re-locks the site.
+
+## Why there is no wrangler.toml
+
+Cloudflare's repo importer treats a `wrangler.toml` as a signal that the repo is a
+**Worker**, and will run `wrangler deploy` against it — which fails, because this is a
+Pages project with no Worker entry point.
+
+Nothing here needs the file. `npm run dev:full` passes `dist` and `--kv AGENDA_KV` on the
+command line, and production bindings live in the Pages dashboard. Leaving it out keeps
+the project unambiguously a Pages app.
+
+If you ever add one back, it must include `pages_build_output_dir` and you should create
+the Cloudflare project through **Pages → Connect to Git**, not the Workers importer.
