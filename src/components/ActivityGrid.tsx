@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import type { Activity } from '../types'
 import { dayKey, readableDay, todayKey } from '../dates'
 
@@ -93,17 +93,28 @@ export default function ActivityGrid({ activity }: { activity: Activity }) {
   )
   const current = useMemo(() => streak(activity), [activity])
 
+  /*
+   * A full year of weeks is wider than the text column, so the grid scrolls.
+   * Start it pinned to the right: recent activity is the part worth seeing,
+   * and a default scroll position of 0 would show last autumn instead.
+   */
+  const scroller = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = scroller.current
+    if (el) el.scrollLeft = el.scrollWidth
+  }, [])
+
   return (
-    <section className="card">
+    <section className="section">
       <div className="section-head">
         <h2>Progress</h2>
-        <span className="grid-stats">
+        <span className="meta">
           {total} {total === 1 ? 'item' : 'items'} completed
           {current > 0 ? ` · ${current}-day streak` : ''}
         </span>
       </div>
 
-      <div className="grid-scroll">
+      <div className="grid-scroll" ref={scroller}>
         <div className="grid-inner">
           <div className="grid-months">
             {labels.map((l) => (

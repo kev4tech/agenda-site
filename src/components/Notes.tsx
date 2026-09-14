@@ -6,7 +6,7 @@ type Props = {
 
 export default function Notes({ notes, editable, onChange }: Props) {
   return (
-    <section className="card">
+    <section className="section">
       <div className="section-head">
         <h2>Notes</h2>
       </div>

@@ -15,7 +15,7 @@ function pct(goal: Goal): number {
 
 export default function Goals({ goals, editable, onChange, onAdd, onRemove }: Props) {
   return (
-    <section className="card">
+    <section className="section">
       <div className="section-head">
         <h2>Goals</h2>
         {editable && goals.length < 6 && (
@@ -27,6 +27,9 @@ export default function Goals({ goals, editable, onChange, onAdd, onRemove }: Pr
 
       {goals.map((goal) => {
         const percent = pct(goal)
+        // A zero target would give the range input an empty span to drag across.
+        const max = Math.max(1, goal.target)
+
         return (
           <div className="goal" key={goal.id}>
             <div className="goal-top">
@@ -34,62 +37,64 @@ export default function Goals({ goals, editable, onChange, onAdd, onRemove }: Pr
                 className="inline-edit goal-title"
                 value={goal.title}
                 disabled={!editable}
-                placeholder="Name this goal"
+                placeholder="What is the goal?"
                 aria-label="Goal name"
                 onChange={(e) => onChange(goal.id, { title: e.target.value })}
               />
-
-              <div className="goal-numbers">
-                <input
-                  className="num"
-                  type="number"
-                  value={goal.current}
-                  disabled={!editable}
-                  aria-label={`${goal.title} progress`}
-                  onChange={(e) => onChange(goal.id, { current: Number(e.target.value) || 0 })}
-                />
-                <span>/</span>
-                <input
-                  className="num"
-                  type="number"
-                  value={goal.target}
-                  disabled={!editable}
-                  aria-label={`${goal.title} target`}
-                  onChange={(e) => onChange(goal.id, { target: Number(e.target.value) || 0 })}
-                />
-                <input
-                  className="unit"
-                  value={goal.unit}
-                  disabled={!editable}
-                  placeholder="unit"
-                  aria-label={`${goal.title} unit`}
-                  onChange={(e) => onChange(goal.id, { unit: e.target.value })}
-                />
-              </div>
-
               <span className="goal-pct">{percent}%</span>
-
               {editable && goals.length > 1 && (
                 <button
                   className="btn ghost"
                   onClick={() => onRemove(goal.id)}
-                  aria-label={`Remove ${goal.title}`}
-                  title="Remove goal"
+                  aria-label={`Remove goal: ${goal.title || 'untitled'}`}
                 >
                   Remove
                 </button>
               )}
             </div>
 
-            <div
-              className="bar"
-              role="progressbar"
-              aria-valuenow={percent}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label={goal.title}
-            >
+            <div className={`bar${editable ? ' editable' : ''}`}>
               <div className="bar-fill" style={{ width: `${percent}%` }} />
+              <input
+                className="bar-range"
+                type="range"
+                min={0}
+                max={max}
+                step={1}
+                value={Math.min(goal.current, max)}
+                disabled={!editable}
+                aria-label={`${goal.title || 'Goal'} progress`}
+                onChange={(e) => onChange(goal.id, { current: Number(e.target.value) })}
+              />
+              <span className="bar-focus" />
+            </div>
+
+            <div className="goal-foot">
+              <input
+                className="num"
+                type="number"
+                value={goal.current}
+                disabled={!editable}
+                aria-label="Progress so far"
+                onChange={(e) => onChange(goal.id, { current: Number(e.target.value) || 0 })}
+              />
+              <span>of</span>
+              <input
+                className="num"
+                type="number"
+                value={goal.target}
+                disabled={!editable}
+                aria-label="Target"
+                onChange={(e) => onChange(goal.id, { target: Number(e.target.value) || 0 })}
+              />
+              <input
+                className="unit"
+                value={goal.unit}
+                disabled={!editable}
+                placeholder="meetings, miles..."
+                aria-label="Unit"
+                onChange={(e) => onChange(goal.id, { unit: e.target.value })}
+              />
             </div>
           </div>
         )

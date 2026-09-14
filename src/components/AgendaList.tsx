@@ -38,10 +38,10 @@ export default function AgendaList({ items, editable, onAdd, onToggle, onEdit, o
   const open = items.filter((i) => !i.done).length
 
   return (
-    <section className="card">
+    <section className="section">
       <div className="section-head">
         <h2>Working on</h2>
-        <span className="grid-stats">
+        <span className="meta">
           {open} open · {items.length - open} done
         </span>
       </div>
