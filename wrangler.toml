@@ -1,0 +1,10 @@
+name = "agenda-site"
+compatibility_date = "2025-09-01"
+pages_build_output_dir = "dist"
+
+# Local `wrangler pages dev` uses this namespace. In production, bind AGENDA_KV
+# in the Cloudflare dashboard under Pages > Settings > Bindings.
+# Create one with:  npx wrangler kv namespace create AGENDA_KV
+[[kv_namespaces]]
+binding = "AGENDA_KV"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
